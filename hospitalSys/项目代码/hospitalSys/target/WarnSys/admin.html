@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>天津医科大学总医院医疗设备检修预警系统</title>
+
+    <link rel="stylesheet" href="layui/css/layui.css"/>
+    <script type="text/javascript" src="jquery/jquery3.4.1.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+    <script type="text/javascript" src="js/my.js"></script>
+    <style>.modal-backdrop {
+        z-index: 0;
+    }</style>
+    <script type="text/javascript">
+        $(function () {
+            $("#mainFrame").load("welcome.html");
+        });
+
+        function loadUserManager() {
+            $("#mainFrame").load("userManager.html");
+        };
+
+        function loadDeviceManager() {
+            $("#mainFrame").load("deviceManager.html");
+        };
+        function loadAgencyManager() {
+            $("#mainFrame").load("agencyManager.html");
+        };
+
+        function loadUserAnalysis() {
+            $("#mainFrame").load("userAnalysis.html");
+        };
+        function loadDeviceManager() {
+            $("#mainFrame").load("deviceManager.html");
+        };
+        function loadLogManager() {
+            $("#mainFrame").load("logManage.html");
+        }
+
+
+        /*
+                function loadPersonCenter() {
+                    $("#mainFrame").load("personCenter.html");
+                }*/
+    </script>
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">layui 后台布局</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <!-- <ul class="layui-nav layui-layout-left">
+             <li class="layui-nav-item"><a href="">控制台</a></li>
+             <li class="layui-nav-item"><a href="">商品管理</a></li>
+             <li class="layui-nav-item"><a href="">用户</a></li>
+             <li class="layui-nav-item">
+                 <a href="javascript:;">其它系统</a>
+                 <dl class="layui-nav-child">
+                     <dd><a href="">邮件管理</a></dd>
+                     <dd><a href="">消息管理</a></dd>
+                     <dd><a href="">授权管理</a></dd>
+                 </dl>
+             </li>
+         </ul>-->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <span id="headPhoto">
+
+                </span>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:loadPersonCenter()"><span class="layui-icon layui-icon-user"></span>基本资料</a>
+                    </dd>
+                    <dd><a href=""><span class="layui-icon layui-icon-password\"></span>修改密码</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出系统</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;"><span class="layui-icon layui-icon-user"></span>所有用户</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadUserManager();"><span class="layui-icon layui-icon-app"></span>用户管理</a>
+                        </dd>
+                        <dd><a href="javascript:;loadUserAnalysis();"><span
+                                class="layui-icon layui-icon-chart-screen"></span>统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item  layui-nav-itemed">
+                    <a href="javascript:;"><span class="layui-icon layui-icon-cellphone"></span>所有设备</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadDeviceManager();"><span class="layui-icon layui-icon-camera"></span>设备管理</a></dd>
+                        <dd><a href="javascript:;"><span class="layui-icon layui-icon-chart-screen"></span>统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;"><span class="layui-icon layui-icon-water"></span>检修日志</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadLogManager();"><span class="layui-icon layui-icon-date"></span>日志管理</a></dd>
+                        <dd><a href="javascript:;">统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">所有供应商</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadAgencyManager();">供应商管理</a></dd>
+                        <dd><a href="javascript:;">统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">系统管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">权限分配</a></dd>
+                        <dd><a href="javascript:;">注销系统</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;" id="mainFrame">
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <p align="center"> ©天津总院检修系统</p>
+    </div>
+</div>
+
+
+<script>
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+
+    });
+</script>
+<script>
+    $(function () {
+    loadUserPhoto();
+    });
+
+    function loadUserPhoto() {
+        layui.use("table", function () {
+            layui.table.render({
+                elem: "#headPhoto",
+                url: "user/loadHeadPhoto.do",
+
+                cols: [[
+                    { field: "t_user_name" },
+
+                    { field: "photo",
+                        templet: function (row) {
+                            return "<img src='" + row.photo + "' style='width: 30px;height: 30px'/>";
+                        }
+                    }
+                ]],
+                done: function (res, curr, count) {
+                    $('.layui-table .layui-table-cell > span').css({'font-weight': 'bold'});//表头字体样式
+                    $('th').css({'background-color': '#5792c6', 'color': '#fff', 'font-weight': 'bold'})
+                    $('th').hide();
+                    $('.layui-table-page').css('margin-top', '40px');
+                }
+
+            });
+        });
+    }
+</script>
+
+
+</body>
+</html>

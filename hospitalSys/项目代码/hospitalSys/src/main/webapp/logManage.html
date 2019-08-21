@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>日志管理</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="jquery/jquery3.4.1.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote">
+    日志管理
+</blockquote>
+<table class="layui-table" id="logTable"></table>
+</body>
+<script id="tb1_tools" type="text/html">
+    <button onclick="addLog()" class="layui-btn layui-btn-danger">
+        <span class="layui-icon layui-icon-add-1"></span> 添加日志
+    </button>
+    <button class="layui-btn layui-btn-danger" onclick="deleteBatchById()">
+        <span class="layui-icon layui-icon-delete"></span> 批量删除
+    </button>
+    <div class="layui-inline">
+        <input name="id" id="tool_ename" class="layui-input-block" placeholder="请输入日志ID"/>
+        <button class="layui-btn layui-btn-danger" onclick="loadAllLogInfo();">
+            <span class="layui-icon layui-icon-search"></span> 搜索
+        </button>
+        <a href="javascript:reloadLogTable();" class="layui-btn layui-btn-danger">
+            <span class="layui-icon layui-icon-refresh"></span> 刷新
+        </a>
+    </div>
+</script>
+<script type="text/javascript">
+    $(function () {
+        loadAllLogInfo();
+    });
+    function loadAllLogInfo(){
+        layui.use('table',function() {
+            layui.table.render({
+                elem: '#logTable',
+                url: 'user/logList.do',
+                where:{"t_log_id":$("#tool_ename").val()},
+                title:'日志列表',
+                id: 'logTable',
+                toolbar:'#tb1_tools',
+                page: true,
+                limit:5,
+                limits:[5,10,20,50],
+                cols: [[
+                    {type: "checkbox"},
+                    {field: 't_log_id', title: '日志ID', sort: true},
+                    {field: 'id', title: 'ID', sort: true},
+                    {field: 't_equip_id', title: '设备ID', sort: true},
+                    {field: 't_log_addTime', title: '日志添加日期', sort: true,templet: '<div>{{ layui.laytpl.toDateString(d.createdTime) }}</div>'},
+                    {field: 't_fix_content', title: '维修内容', sort: true},
+                    {
+                        field:'id',
+                        title:'操作',
+                        templet:function (row) {
+                            var del="<a href='javaScript:deleteLogInfoById("+row.t_log_id+")' title='删除'><span style='font-size: 25px;color: #FF0000;' class='layui-icon layui-icon-delete'></span></a>";
+                            var update="<button title='更新' onclick='modifyLog("+row.t_log_id+")'><span style='font-size: 25px;color: #0000FF;' class='layui-icon layui-icon-edit'></span></button>";
+                            return del+'<span style="color: gray;font-size: 30px">|</span>'+update;
+                        }
+                    }
+                ]]
+            });
+            //时间戳的处理
+            layui.laytpl.toDateString = function(d, format){
+                var date = new Date(d || new Date())
+                    ,ymd = [
+                    this.digit(date.getFullYear(), 4)
+                    ,this.digit(date.getMonth() + 1)
+                    ,this.digit(date.getDate())
+                ]
+                    ,hms = [
+                    this.digit(date.getHours())
+                    ,this.digit(date.getMinutes())
+                    ,this.digit(date.getSeconds())
+                ];
+
+                format = format || 'yyyy-MM-dd HH:mm:ss';
+
+                return format.replace(/yyyy/g, ymd[0])
+                    .replace(/MM/g, ymd[1])
+                    .replace(/dd/g, ymd[2])
+                    .replace(/HH/g, hms[0])
+                    .replace(/mm/g, hms[1])
+                    .replace(/ss/g, hms[2]);
+            };
+
+            //数字前置补零
+            layui.laytpl.digit = function(num, length, end){
+                var str = '';
+                num = String(num);
+                length = length || 2;
+                for(var i = num.length; i < length; i++){
+                    str += '0';
+                }
+                return num < Math.pow(10, length) ? str + (num|0) : num;
+            };
+        });
+    }
+    //添加设备
+    function addLog() {
+        layer.open({
+            type: 2,
+            title: "添加日志信息",
+            closeBtn: 2, //不显示关闭按钮
+            area: ['500px', '450px'],
+            anim: 2,
+            content: ['addLog.html', 'no'], //iframe的url，no代表不显示滚动
+            cancel:function () {
+                layui.table.reload("logTable");
+            }
+        });
+    }
+    //刷新
+    function reloadLogTable() {
+        layui.table.reload("logTable");
+    }
+    //批量删除
+    function deleteBatchById() {
+        //获取数据表格的check选中数据
+        var table=layui.table.checkStatus("logTable");
+        var str="";
+        $.each(table.data, function (index, arr) {
+            str += arr.t_log_id + ",";
+        });
+        if(str.length==0)
+            layer.msg("请选择要删除的用户");
+        else{
+            //提示是否删除
+            layer.confirm("是否删除该用户?",{icon:3,title:"警告"},function () {
+                //数据在table中layui删除，而不等于数据库删除
+                layer.closeAll();
+                //异步删除db数据
+                $.ajax({
+                    url:'user/deleteLogById.do',
+                    data:{id:str},
+                    method:'post',
+                    success:function (result) {
+                        if (JSON.parse(result)=="success"){
+                            layer.msg("删除users成功");
+                            //刷新table
+                            layui.table.reload("logTable");
+                        } else{
+                            layer.msg("删除失败！", {icon: 2});
+                        }
+                    },
+                    error:function () {
+                        layer.msg("连接服务器失败！", {icon: 2});
+                    }
+                });
+            });
+        }
+    }
+    //用户单个删除函数
+    function deleteLogInfoById(t_log_id) {
+        //提示是否删除
+        layer.confirm("是否删除该用户?",{icon:3,title:"警告"},function () {
+            //数据在table中layui删除，而不等于数据库删除
+            layer.closeAll();
+            //异步删除db数据
+            $.ajax({
+                url:'user/deleteLogById.do',
+                data:{id:t_log_id+","},
+                success:function (result) {
+                    if (JSON.parse(result)=="success"){
+                        layer.msg("删除users成功");
+                        //刷新table
+                        layui.table.reload("logTable");
+                    } else{
+                        layer.msg("删除失败！", {icon: 2});
+                    }
+                },
+                error:function () {
+                    layer.msg("连接服务器失败！", {icon: 2});
+                }
+            });
+        });
+    }
+    function modifyLog(t_log_id) {
+        layer.open({
+            type: 2,
+            title: "修改设备信息",
+            closeBtn: 2, //不显示关闭按钮
+            area: ['500px', '450px'],
+            anim: 2,
+            content: ['modifyLog.html?t_log_id='+t_log_id,'no'],//iframe的url，no代表不显示滚动
+            cancel:function () {
+                layui.table.reload("logTable");
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备管理</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="jquery/jquery3.4.1.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote">
+    设备管理
+</blockquote>
+<table class="layui-table" id="deviceTable"></table>
+</body>
+<script id="tb1_tools" type="text/html">
+    <button onclick="addDevice()" class="layui-btn layui-btn-danger">
+        <span class="layui-icon layui-icon-add-1"></span> 添加设备
+    </button>
+    <button class="layui-btn layui-btn-danger" onclick="deleteBatchById()">
+        <span class="layui-icon layui-icon-delete"></span> 批量删除
+    </button>
+    <div class="layui-inline">
+        <input name="id" id="tool_ename" class="layui-input-block" placeholder="请输入设备名"/>
+        <button class="layui-btn layui-btn-danger" onclick="loadAllDeviceInfo();">
+            <span class="layui-icon layui-icon-search"></span> 搜索
+        </button>
+        <a href="javascript:reloadDeviceTable();" class="layui-btn layui-btn-danger">
+            <span class="layui-icon layui-icon-refresh"></span> 刷新
+        </a>
+    </div>
+</script>
+<script type="text/javascript">
+    $(function () {
+        loadAllDeviceInfo();
+    });
+    function loadAllDeviceInfo(){
+        layui.use('table',function() {
+            layui.table.render({
+                elem: '#deviceTable',
+                url: 'user/deviceList.do',
+                where:{"t_device_name":$("#tool_ename").val()},
+                title:'设备列表',
+                id: 'deviceTable',
+                toolbar:'#tb1_tools',
+                page: true,
+                limit:5,
+                limits:[5,10,20,50],
+                cols: [[
+                    {type: "checkbox"},
+                    {field: 't_equip_id', title: 'ID', sort: true},
+                    {field: 't_agency_id', title: '机构ID', sort: true},
+                    {field: 't_dic_code', title: '日志ID', sort: true},
+                    {field: 't_device_name', title: '设备名', sort: true},
+                    {field: 't_dtype', title: '类型', sort: true},
+                    {field: 't_factory', title: '生产工厂', sort: true},
+                    {field: 't_dnumber', title: '编号', sort: true},
+                    {field: 't_buy_date', title: '购买日期', sort: true},
+                    {field: 't_check_date', title: '检修日期', sort: true},
+                    {field: 't_sid', title: '供应商ID', sort: true},
+                    {field: 't_left_day', title: '上次检修日期', sort: true},
+                    {field: 't_check_circle', title: '检修周期', sort: true},
+                    {field: '',title:'检修',
+                        templet:function (row) {
+                            var startTime=new Date(Date.parse(row.t_left_day.replace(/-/g,"/"))).getTime();
+                            var endTime=new Date().getTime();
+                            var days=Math.abs((startTime-endTime))/(1000*60*60*24);
+                            if(days>row.t_check_circle){
+                                var repair="<a href='javaScript:repairDevice("+row.t_equip_id+")' title='检修'><span style='font-size: 25px;color: red;' class='layui-icon layui-icon-util'></span></a>";
+                                return repair;
+                            }else{
+                                var repair="<a href='javaScript:repairDevice("+row.t_equip_id+")' title='检修'><span style='font-size: 25px;color: grey;' class='layui-icon layui-icon-util'></span></a>";
+                                return repair;
+                            }
+
+                        }
+                    },
+                    {
+                        field:'id',
+                        title:'操作',
+                        templet:function (row) {
+                            var del="<a href='javaScript:deleteDeviceInfoById("+row.t_equip_id+")' title='删除'><span style='font-size: 25px;color: #FF0000;' class='layui-icon layui-icon-delete'></span></a>";
+                            var update="<button title='更新' onclick='modifyDevice("+row.t_equip_id+")'><span style='font-size: 25px;color: #0000FF;' class='layui-icon layui-icon-edit'></span></button>";
+                            return del+'<span style="color: gray;font-size: 30px">|</span>'+update;
+                        }
+                    }
+                ]]
+            });
+        });
+    }
+    //维修设备
+    function repairDevice(t_equip_id) {
+        $.ajax({
+            url:'user/repairDevice.do',
+            data:{t_equip_id:t_equip_id},
+            method:'get',
+            success:function (result) {
+                if (JSON.parse(result)=="success"){
+                    layer.msg("维修设备成功");
+                    //刷新table
+                    layui.table.reload("deviceTable");
+                    $.ajax({
+                        url:'user/repairLog.do',
+                        data:{t_equip_id:t_equip_id},
+                        success:function (result) {
+                            if(JSON.parse(result)=="success"){
+                                layer.msg("添加日志成功");
+                            }else{
+                                layer.msg("添加日志失败",{icon:2});
+                            }
+                        },
+                        error:function () {
+                            layer.msg("连接服务器失败！", {icon: 2});
+                        }
+                    });
+                } else{
+                    layer.msg("维修失败！", {icon: 2});
+                }
+            },
+            error:function () {
+                layer.msg("连接服务器失败！", {icon: 2});
+            }
+        });
+    }
+    //添加设备
+    function addDevice() {
+        layer.open({
+            type: 2,
+            title: "添加设备信息",
+            closeBtn: 2, //不显示关闭按钮
+            area: ['500px', '450px'],
+            anim: 2,
+            content: ['addDevice.html', 'no'], //iframe的url，no代表不显示滚动
+            cancel:function () {
+                layui.table.reload("deviceTable");
+            }
+        });
+    }
+    //刷新
+    function reloadDeviceTable() {
+        layui.table.reload("deviceTable");
+    }
+    //批量删除
+    function deleteBatchById() {
+        //获取数据表格的check选中数据
+        var table=layui.table.checkStatus("deviceTable");
+        var str="";
+        $.each(table.data, function (index, arr) {
+            str += arr.t_equip_id + ",";
+        });
+        if(str.length==0)
+            layer.msg("请选择要删除的用户");
+        else{
+            //提示是否删除
+            layer.confirm("是否删除该用户?",{icon:3,title:"警告"},function () {
+                //数据在table中layui删除，而不等于数据库删除
+                layer.closeAll();
+                //异步删除db数据
+                $.ajax({
+                    url:'user/deleteUserById.do',
+                    data:{id:str},
+                    method:'post',
+                    success:function (result) {
+                        if (JSON.parse(result)=="success"){
+                            layer.msg("删除users成功");
+                            //刷新table
+                            layui.table.reload("deviceTable");
+                        } else{
+                            layer.msg("删除失败！", {icon: 2});
+                        }
+                    },
+                    error:function () {
+                        layer.msg("连接服务器失败！", {icon: 2});
+                    }
+                });
+            });
+        }
+    }
+    //用户单个删除函数
+    function deleteDeviceInfoById(t_equip_id) {
+        //提示是否删除
+        alert(t_equip_id);
+        layer.confirm("是否删除该用户?",{icon:3,title:"警告"},function () {
+            //数据在table中layui删除，而不等于数据库删除
+            layer.closeAll();
+            //异步删除db数据
+            $.ajax({
+                url:'user/deleteUserById.do',
+                data:{id:t_equip_id+","},
+                success:function (result) {
+                    if (JSON.parse(result)=="success"){
+                        layer.msg("删除users成功");
+                        //刷新table
+                        layui.table.reload("deviceTable");
+                    } else{
+                        layer.msg("删除失败！", {icon: 2});
+                    }
+                },
+                error:function () {
+                    layer.msg("连接服务器失败！", {icon: 2});
+                }
+            });
+        });
+    }
+    function modifyDevice(t_equip_id) {
+        layer.open({
+            type: 2,
+            title: "修改设备信息",
+            closeBtn: 2, //不显示关闭按钮
+            area: ['500px', '450px'],
+            anim: 2,
+            content: ['modifyDevice.html?t_equip_id='+t_equip_id],//iframe的url，no代表不显示滚动
+            cancel:function () {
+                layui.table.reload("deviceTable");
+            }
+        });
+
+    }
+</script>
+</html>

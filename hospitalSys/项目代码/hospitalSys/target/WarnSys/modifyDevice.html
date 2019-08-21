@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>修改设备</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script type="text/javascript" src="jquery/jquery3.4.1.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+</head>
+<body style="margin-right: 50px">
+<br>
+<form class="layui-form" action="user/modifyDevice.do" method="post" accept-charset="UTF-8">
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_equip_id" name="t_equip_id" lay-verify="required" autocomplete="off" readonly="readonly" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">机构ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_agency_id" name="t_agency_id" lay-verify="required" autocomplete="off" placeholder="请输入机构ID" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">不知道啥ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_dic_code" name="t_dic_code" lay-verify="required" autocomplete="off" placeholder="请输入设备名" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备名</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_device_name" name="t_device_name" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备类型</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_dtype" name="t_dtype" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备生产工厂</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_factory" name="t_factory" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备编号</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_dnumber" name="t_dnumber" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备购买日期</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_buy_date" name="t_buy_date" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备检修日期</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_check_date" name="t_check_date" lay-verify="required"  placeholder="请输入设备检查日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">对应供应商ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_sid" name="t_sid" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">不知道啥意思</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_left_day" name="t_left_day" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">也不知道啥意思</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_check_circle" name="t_check_circle" lay-verify="required"  placeholder="请输入设备购买日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn"  lay-filter="demo1">确认添加</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+    <br>
+    <br>
+</form>
+</body>
+<script type="text/javascript">
+    $(function () {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1); //substr()方法返回从参数值开始到结束的字符串；
+            var strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+            }//此时的theRequest就是我们需要的参数；
+            $('#t_equip_id').val(theRequest["t_equip_id"]);
+        }
+    });
+</script>
+</html>

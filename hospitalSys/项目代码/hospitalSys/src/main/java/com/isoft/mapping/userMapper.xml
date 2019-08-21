@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.isoft.mapping.userMapper">
+
+
+    <select id="findAllUser" parameterType="map" resultType="map">
+        select  * from t_person join t_sys_user
+        on t_person.id=t_sys_user.t_user_id
+        <where>
+            <if test="t_cname!=null">
+            and t_cname like concat(concat('%',#{t_cname}),'%')
+            </if>
+        </where>
+        limit #{recordIndex},#{pagesize}
+    </select>
+    <select id="loadHeadPhoto" parameterType="map" resultType="map">
+        select * from t_sys_user where t_user_name=#{uname}
+    </select>
+
+    <select id="findCountUser" resultType="int" parameterType="map">
+        select count(*) from t_person
+        <where>
+            <if test="t_cname!=null">
+                and t_cname like concat(concat('%',#{t_cname}),'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="userGenderAnalysis" resultType="map">
+        select t_gender,count(*) as `count` from t_person group by t_gender
+    </select>
+
+    <insert id="insertUser" parameterType="map">
+        insert into t_person(t_cname, t_gender,t_mobile,t_email) values (#{t_cname},#{t_gender},#{t_mobile},#{t_email})
+    </insert>
+
+    <update id="updateLastLoginTime" parameterType="map">
+        update tb_user set lastLoginTime=#{lastLoginTime} where uname=#{uname} and upwd=md5(#{upwd})
+    </update>
+
+    <update id="updateUser" parameterType="map">
+        update t_person set t_cname=#{t_cname},t_email=#{t_email},t_mobile=#{t_mobile},t_gender=#{t_gender} where id=#{id}
+    </update>
+    <update id="updatePerson" parameterType="map">
+        update t_person set t_cname=#{t_cname},t_email=#{t_email},t_mobile=#{t_mobile},t_gender=#{t_gender} where id=#{id}
+    </update>
+    <delete id="deleteBenchById" parameterType="String">
+        delete  from  t_person where id =#{id}
+    </delete>
+
+    <update id="updatePhoto">
+        update t_sys_user set photo=#{photo} where t_user_name=#{uname}
+    </update>
+
+    <!--     周-->
+
+    <!--    查询员工表单信息-->
+    <select id="findDeviceAll" resultType="map">
+        select * from t_device
+        <where>
+            <if test="t_device_name!=null">
+                and t_device_name like concat("%",concat(#{t_device_name},"%"))
+            </if>
+        </where>
+        limit #{recordIndex},#{pagesize}
+    </select>
+    <!--    查询员工表单数量，做分页-->
+    <select id="findCountDevice" resultType="int">
+    select count(*) from t_device
+    </select>
+
+    <!--    登录查询用户名和密码-->
+    <select id="findUserByUnameAndUpwd" parameterType="map" resultType="map">
+        select * from t_sys_user where t_user_name=#{uname} and t_user_pwd=#{upwd}
+    </select>
+
+    <!--    新用户注册-->
+    <insert id="signup" parameterType="map">
+        insert into t_sys_user(t_user_name,t_user_pwd,t_role) values(#{signupname},#{signuppwd},#{role})
+    </insert>
+
+    <!--    老用户按email找回密码-->
+    <select id="findEmail" resultType="map">
+        select * from t_person where t_email=#{email}
+    </select>
+
+    <!--    老用户按phone找回密码-->
+    <select id="findPhone" resultType="map">
+        select * from t_person where t_mobile=#{phone}
+    </select>
+
+    <!--按照email修改密码-->
+    <update id="modifyPasswordByEmail">
+        update t_sys_user set t_user_pwd=#{newPassword} where t_user_id in (
+        select t_user_id from t_person where t_email=#{email}
+        )
+    </update>
+    <!--按照phone修改密码-->
+    <update id="modifyPasswordByPhone">
+        update t_sys_user set t_user_pwd=#{newPassword} where t_user_id in (
+        select t_user_id from t_person where t_mobile=#{phone}
+        )
+    </update>
+    <!--添加设备-->
+    <insert id="insertDevice" parameterType="map">
+        insert into t_device(t_equip_id, t_agency_id,t_device_name,t_buy_date,t_check_date)
+         values (#{t_equip_id},#{t_agency_id},#{t_device_name},#{t_buy_date},#{t_check_date})
+    </insert>
+    <!--    根据id删除用户-->
+    <delete id="deleteUserById" parameterType="String">
+        delete from t_device where t_equip_id=#{id}
+        <!--<foreach collection="array" index="index" open="(" close=")" separator=",">
+        #{id}
+        </foreach>-->
+    </delete>
+    <!--更新设备信息-->
+    <update id="updateDevice" parameterType="map">
+        update t_device set t_agency_id=#{t_agency_id},t_dic_code=#{t_dic_code},t_device_name=#{t_device_name},
+         t_dtype=#{t_dtype},t_factory=#{t_factory},t_dnumber=#{t_dnumber},
+         t_buy_date=#{t_buy_date},t_check_date=#{t_check_date},t_sid=#{t_sid},
+         t_left_day=#{t_left_day},t_check_circle=#{t_check_circle} where t_equip_id=#{t_equip_id}
+    </update>
+    <!--    查询日志表单信息-->
+    <select id="findLogAll" resultType="map">
+        select * from t_equip_log
+        <where>
+            <if test="t_log_id!=null">
+                and t_log_id like concat("%",concat(#{t_log_id},"%"))
+            </if>
+        </where>
+        limit #{recordIndex},#{pagesize}
+    </select>
+    <!--    查询日志表单数量，做分页-->
+    <select id="findCountLog" resultType="int">
+    select count(*) from t_equip_log
+    </select>
+    <!--添加日志-->
+    <insert id="insertLog" parameterType="map">
+        insert into t_equip_log(t_log_id, id,t_equip_id,t_log_addTime,t_fix_content)
+         values (#{t_log_id},#{id},#{t_equip_id},#{t_log_addTime},#{t_fix_content})
+    </insert>
+    <!--    根据id删除日志-->
+    <delete id="deleteLogById" parameterType="String">
+        delete from t_equip_log where t_log_id=#{id}
+        <!--<foreach collection="array" index="index" open="(" close=")" separator=",">
+        #{id}
+        </foreach>-->
+    </delete>
+    <!--更新日志信息-->
+    <update id="updateLog" parameterType="map">
+        update t_equip_log set id=#{id},t_equip_id=#{t_equip_id},t_log_addTime=#{t_log_addTime}
+        ,t_fix_content=#{t_fix_content} where t_log_id=#{t_log_id}
+    </update>
+    <!--维修设备-->
+    <update id="repairDevice" parameterType="map">
+        update t_device set t_left_day=CURRENT_TIMESTAMP where t_equip_id=#{t_equip_id}
+    </update>
+    <!--维修添加日志-->
+    <insert id="repairLog" parameterType="map">
+        insert into t_equip_log(t_equip_id,t_log_addTime)
+         values (#{t_equip_id},CURRENT_TIMESTAMP)
+    </insert>
+
+
+
+
+
+
+    <!--     陈-->
+    <!--    查询供应商表单信息-->
+    <select id="findAgencyAll" resultType="map">
+    select * from t_agency
+<!--        <where>-->
+<!--            <if test="t_agency_name!=null">-->
+<!--                and t_agency_name like concat('%',concat(#{t_agency_name},'%'))-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        limit #{recordIndex},#{pagesize}-->
+    </select>
+
+
+    <!--    查询供应商表单数量，做分页-->
+    <select id="findCountAgency" resultType="int">
+    select count(*) from t_agency
+<!--        <where>-->
+<!--            <if test="t_agency_name!=null">-->
+<!--                and t_agency_name like concat('%',concat(#{t_agency_name},'%'))-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        limit #{recordIndex},#{pagesize}-->
+    </select>
+
+
+
+
+
+
+</mapper>

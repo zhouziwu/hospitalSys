@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备管理</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="jquery/jquery3.4.1.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+    <style>.modal-backdrop{z-index:0;}</style>
+</head>
+<body>
+<blockquote class="layui-elem-quote">
+    供应商管理
+</blockquote>
+<table class="layui-table" id="agencyTable"></table>
+</body>
+<script id="tb1_tools" type="text/html">
+    <button class="layui-btn layui-btn-danger" data-toggle="modal" data-target="#mainModal">
+        <span class="layui-icon layui-icon-add-1"></span> 添加供应商
+    </button>
+    <button class="layui-btn layui-btn-danger" onclick="deleteBatchById();">
+        <span class="layui-icon layui-icon-delete"></span> 批量删除
+    </button>
+    <div class="layui-inline">
+        <input name="id" id="tool_ename" class="layui-input-block" placeholder="请输入供应商名"/>
+        <button class="layui-btn layui-btn-danger" onclick="loadAllDeviceInfo();">
+            <span class="layui-icon layui-icon-search"></span> 搜索
+        </button>
+        <a href="javascript:reloadAgencyTable();" class="layui-btn layui-btn-danger">
+            <span class="layui-icon layui-icon-refresh"></span> 刷新
+        </a>
+    </div>
+</script>
+<script type="text/javascript">
+    $(function () {
+        loadAllAgencyInfo();
+    });
+    function loadAllAgencyInfo(){
+        layui.use('table',function() {
+            layui.table.render({
+                elem: '#agencyTable',
+                url: 'user/agencyList.do',
+                where:{"t_agency_name":$("#tool_ename").val()},
+                title:'供应商信息列表',
+                id: 'agencyTable',
+                toolbar:'#tb1_tools',
+                page: true,
+                limit:5,
+                limits:[5,10,20,50],
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 't_agency_id', title: '供应商ID', sort: true},
+                    {field: 't_license', title: '执照ID', sort: true},
+                    {field: 't_permit_no', title: '许可证ID', sort: true},
+                    {field: 't_agency_name', title: '供应商', sort: true},
+
+                    {
+                        field:'id',
+                        title:'操作',
+                        templet:function (row) {
+                            var del="<a href='javaScript:deleteDeviceInfoById("+row.id+")' title='删除'><span style='font-size: 25px;color: #FF0000;' class='layui-icon layui-icon-delete'></span></a>";
+                            var update="<button data-toggle='modal' data-target='#updateModal' title='更新' onclick='getRowId("+row.id+")'><span style='font-size: 25px;color: #0000FF;' class='layui-icon layui-icon-edit'></span></button>";
+                            return del+'<span style="color: gray;font-size: 30px">|</span>'+update;
+                        }
+                    }
+                ]]
+            });
+        });
+    }
+</script>
+</html>

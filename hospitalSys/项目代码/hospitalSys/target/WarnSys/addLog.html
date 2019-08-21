@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>添加日志</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script type="text/javascript" src="jquery/jquery3.4.1.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+</head>
+<body style="margin-right: 50px">
+<br>
+<form class="layui-form" action="user/addLog.do" method="post" accept-charset="UTF-8">
+    <div class="layui-form-item">
+        <label class="layui-form-label">日志ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_log_id" name="t_log_id" lay-verify="required" autocomplete="off" placeholder="请输入日志ID" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="id" name="id" lay-verify="required" autocomplete="off" placeholder="请输入ID" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备ID</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_equip_id" name="t_equip_id" lay-verify="required" autocomplete="off" placeholder="请输入设备ID" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">日志添加日期</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_log_addTime" name="t_log_addTime" lay-verify="required"  placeholder="请输入日志添加日期" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">维修内容</label>
+        <div class="layui-input-block">
+            <input type="text" id="t_fix_content" name="t_fix_content" lay-verify="required"  placeholder="请输入维修内容" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn"  lay-filter="demo1">确认添加</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+    <br>
+    <br>
+</form>
+</body>
+</html>

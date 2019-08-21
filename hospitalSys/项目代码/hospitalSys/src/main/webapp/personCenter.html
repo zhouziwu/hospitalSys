@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script type="text/javascript" src="jquery/jquery3.4.1.js"></script>
+    <script src="layui/layui.all.js"></script>
+    <script type="text/javascript" src="js/my.js"></script>
+</head>
+
+<body>
+<script>
+    $(function () {
+        $('#id').val("12");
+        $('#name').val("王生");$('#sex').val("男");$('#email').val("hanwang@163.com");$('#mobile').val("13233454565");
+
+    });
+
+
+</script>
+<blockquote class="layui-elem-quote">
+    完善个人信息
+</blockquote>
+<div class="layui-row">
+    <div class="layui-col-sm6">
+        <form class="layui-form" action="user/updatePerson.do" method="post" accept-charset="UTF-8">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户id</label>
+                <div class="layui-input-block">
+                    <input id="id" type="text" name="id" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" id="name" name="t_cname" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">性别</label>
+                <div class="layui-input-block">
+                    <input type="text" id="sex" name="t_gender" lay-verify="required" lay-reqtext="用户名是必填项，岂能为空？"
+                           placeholder="请输入" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">电话</label>
+                    <div class="layui-input-inline">
+                        <input type="tel" id="mobile" name="t_mobile" lay-verify="required|phone" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Email</label>
+                    <div class="layui-input-inline">
+                        <input type="text"  id="email" name="t_email" lay-verify="email" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="demo1" >确认修改</button>
+<!--                    <button class="layui-btn" lay-submit="" lay-filter="demo1" ><a href="javascript:reloadPersonCenter()">确认修改</a></button>-->
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="layui-col-sm4 ">
+        <div align="center" class="layui-upload layui-layout-right">
+            <div class="layui-upload-list">
+                <img class="layui-upload-img layui-circle" style="width: 120px;height: 150px" id="demo1"
+                     src="images/6.jpg">
+                <p id="demoText"></p>
+            </div>
+            <button type="button" class="layui-btn" id="test1">上传图片</button>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use("upload", function () {
+        var $ = layui.jquery
+            , upload = layui.upload;
+
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test1'
+            , url: 'user/uploadPhoto.do'
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+            }
+            , done: function (res) {
+                //如果上传失败
+                if (res.code > 0) {
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+    });
+</script>
+<script>
+  /*  function reloadPersonCenter() {
+        window.location.href="personCenter.html";
+    }*/
+</script>
+</body>
+</html>
